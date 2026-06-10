@@ -1,13 +1,18 @@
 steps:
-  # 1. Construir la imagen Docker usando el directorio actual como raíz (.)
+  # 1. Construir la imagen apuntando explícitamente al Dockerfile dentro de frontend
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/frontend-react', '.']
+    args: [
+      'build', 
+      '-t', 'gcr.io/$PROJECT_ID/frontend-react', 
+      '-f', './frontend/Dockerfile', 
+      './frontend'
+    ]
 
   # 2. Subir la imagen al Container Registry de Google Cloud
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/frontend-react']
 
-  # 3. Desplegar en Google Cloud Run en la región us-south1 (Dallas)
+  # 3. Desplegar en Google Cloud Run en la región us-south1
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args:

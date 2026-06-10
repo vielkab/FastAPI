@@ -45,3 +45,5 @@ def obtener_tareas():
 def crear_tarea(tarea: Tarea):
     base_de_datos_tareas.append(tarea.dict())
     return tarea
+
+# Intento de despliegue con repositorio ECR corregido

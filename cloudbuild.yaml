@@ -1,18 +1,13 @@
 steps:
-  # 1. Construir la imagen apuntando al Dockerfile de frontend
+  # 1. Construir la imagen Docker desde la raíz
   - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'build', 
-      '-t', 'gcr.io/$PROJECT_ID/frontend-react', 
-      '-f', './frontend/Dockerfile', 
-      './frontend'
-    ]
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/frontend-react', '.']
 
   # 2. Subir la imagen al Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/frontend-react']
 
-  # 3. Desplegar en Cloud Run cambiando el puerto a 8080
+  # 3. Desplegar en Cloud Run usando el puerto 8080
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args:
@@ -23,7 +18,7 @@ steps:
       - '--region=us-south1'
       - '--platform=managed'
       - '--allow-unauthenticated'
-      - '--port=8080' # 🖥️ Cambiado a 8080 para que coincida con tu Dockerfile
+      - '--port=8080'
 
 images:
   - 'gcr.io/$PROJECT_ID/frontend-react'

@@ -34,7 +34,7 @@ jobs:
     - name: Build, Tag, and Push Image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: backend-tareas-fastapi # Debe ser igual al nombre que pusiste en AWS ECR
+        ECR_REPOSITORY: backendfastapi # Debe ser igual al nombre que pusiste en AWS ECR
         IMAGE_TAG: latest
       run: |
         cd backend

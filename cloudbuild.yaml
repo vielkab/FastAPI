@@ -1,7 +1,7 @@
 steps:
-  # 1. Construir la imagen Docker para el Frontend
+  # 1. Construir la imagen Docker usando el directorio actual como raíz (.)
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/frontend-react', './frontend']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/frontend-react', '.']
 
   # 2. Subir la imagen al Container Registry de Google Cloud
   - name: 'gcr.io/cloud-builders/docker'

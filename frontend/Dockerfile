@@ -1,28 +1,20 @@
-# --- ETAPA 1: Compilación del proyecto ---
+# 1. Etapa de compilación (Build)
 FROM node:20-alpine AS build
-
 WORKDIR /app
-
-# Copiar los archivos de configuración de dependencias
 COPY package*.json ./
-
-# Instalar los módulos de Node
 RUN npm install
-
-# Copiar todo el código del frontend
 COPY . .
-
-# Compilar la aplicación para producción (esto genera la carpeta /dist)
 RUN npm run build
 
-# --- ETAPA 2: Servidor de producción ---
-FROM nginx:alpine
+# 2. Etapa de producción (Servidor Nginx en puerto 8080)
+FROM nginx:1.27-alpine
 
-# Copiar los archivos compilados de la etapa anterior al directorio de Nginx
+ENV PORT=8080
+
+# Copiamos la plantilla de configuración de Nginx para el puerto 8080
+COPY nginx.conf /etc/nginx/templates/default.conf.template
+
+# Copiamos los archivos compilados de React a la carpeta de Nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copiar una configuración personalizada de Nginx para manejar rutas de React (opcional pero recomendado)
-# Si no la tienes, Nginx usará la por defecto que expone el puerto 80
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 8080

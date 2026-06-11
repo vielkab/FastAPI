@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 
 // URL local por ahora. Cuando despliegues en AWS, cámbiala por la URL de App Runner
-const API_URL = "http://localhost:8080";
+const API_URL = "http://backend-fastapi-app-env.eba-rdyaspgd.us-east-2.elasticbeanstalk.com";
 
 function App() {
   const [tareas, setTareas] = useState([]);

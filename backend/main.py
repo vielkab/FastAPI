@@ -45,5 +45,31 @@ def obtener_tareas():
 def crear_tarea(tarea: Tarea):
     base_de_datos_tareas.append(tarea.dict())
     return tarea
+    
+# Endpoint para actualizar una tarea completa (PUT)
+@app.put("/tareas/{tarea_id}", response_model=Tarea)
+def actualizar_tarea(tarea_id: int, tarea_actualizada: Tarea):
+    for i, tarea in enumerate(base_de_datos_tareas):
+        if tarea["id"] == tarea_id:
+            base_de_datos_tareas[i] = tarea_actualizada.dict()
+            return tarea_actualizada
+    return {"error": error}
 
+# Endpoint para actualizar parcialmente una tarea (PATCH)
+@app.patch("/tareas/{tarea_id}")
+def actualizar_estado_tarea(tarea_id: int, completada: bool):
+    for tarea in base_de_datos_tareas:
+        if tarea["id"] == tarea_id:
+            tarea["completada"] = completada
+            return tarea
+    return {"error": error}
+
+# Endpoint para eliminar una tarea (DELETE)
+@app.delete("/tareas/{tarea_id}")
+def eliminar_tarea(tarea_id: int):
+    for i, tarea in enumerate(base_de_datos_tareas):
+        if tarea["id"] == tarea_id:
+            base_de_datos_tareas.pop(i)
+            return {"mensaje": "Tarea eliminada correctamente"}
+    return {"error": error}
 # Intento de despliegue con repositorio ECR corregido

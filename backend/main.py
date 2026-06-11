@@ -4,6 +4,10 @@ from pydantic import BaseModel
 from typing import List
 
 error = "Tarea no encontrada"
+origins = [
+    "https://fastapi-817979807762.us-south1.run.app/", # Tu url de Google Cloud
+    "http://localhost:5173",                          # Por si pruebas local
+]
 
 app = FastAPI(
     title="API de Tareas - AWS Backend",
@@ -14,7 +18,7 @@ app = FastAPI(
 # Configuración de CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

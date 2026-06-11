@@ -32,13 +32,18 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./backend
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
+    - name: Generate Deployment Package
+      run: |
+        cd backend
+        zip -r ../deploy.zip ./*
+
     - name: Deploy to Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v21
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: 'backend-fastapi-app' # 🏢 El nombre que le darás en AWS
-        environment_name: 'Backend-fastapi-app-env' # 🌐 El entorno de AWS
+        application_name: 'backend-fastapi-app'
+        environment_name: 'Backend-fastapi-app-env'
         version_label: ${{ github.sha }}
         region: us-east-2
-        deployment_package: backend/Dockerrun.aws.json # 🗺️ Usamos el JSON como paquete
+        deployment_package: deploy.zip # 👈 Le pasamos todo el paquete comprimido con el Dockerfile real

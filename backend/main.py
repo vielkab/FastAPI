@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 
+error = "Tarea no encontrada"
+
 app = FastAPI(
     title="API de Tareas - AWS Backend",
     description="Backend en AWS que expone una lista de tareas y su documentación",

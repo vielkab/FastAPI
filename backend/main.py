@@ -32,7 +32,7 @@ class Tarea(BaseModel):
 
 # Base de datos simulada en memoria
 base_de_datos_tareas = [
-    {"id": 1, "titulo": "Aprender despliegues en AWS App Runner", "completada": False},
+    {"id": 1, "titulo": "Aprender despliegues en AWS Elastic Beanstalk", "completada": False},
     {"id": 2, "titulo": "Configurar Google Cloud Run para Frontend", "completada": False},
     {"id": 3, "titulo": "Automatizar todo con CI/CD", "completada": False}
 ]

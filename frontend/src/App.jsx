@@ -7,6 +7,8 @@ const API_URL = "http://localhost:8080";
 function App() {
   const [tareas, setTareas] = useState([]);
   const [nuevaTarea, setNuevaTarea] = useState("");
+  const [editando, setEditando] = useState(null);
+  const [tareaEditada, setTareaEditada] = useState("");
 
   // 1. Obtener tareas del backend (AWS)
   const cargarTareas = async () => {
@@ -37,7 +39,7 @@ function App() {
     try {
       const response = await fetch(`${API_URL}/tareas`, {
         method: "POST",
-        headers: { "Content-Type": "application/飲食json", "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(objetoTarea)
       });
 
@@ -50,7 +52,52 @@ function App() {
     }
   };
 
-  // 3. Eliminar una tarea
+  // 3. Iniciar edición de una tarea
+  const iniciarEdicion = (tarea) => {
+    setEditando(tarea.id);
+    setTareaEditada(tarea.titulo);
+  };
+
+  // 4. Guardar cambios en la tarea editada
+  const guardarEdicion = async (id) => {
+    if (!tareaEditada.trim()) return;
+
+    const tareaActual = tareas.find((t) => t.id === id);
+    if (!tareaActual) return;
+
+    const tareaActualizada = {
+      id,
+      titulo: tareaEditada,
+      completada: tareaActual.completada
+    };
+
+    try {
+      const response = await fetch(`${API_URL}/tareas/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tareaActualizada)
+      });
+
+      if (response.ok) {
+        setEditando(null);
+        setTareaEditada("");
+        cargarTareas();
+      } else {
+        const text = await response.text();
+        console.error("Error al guardar edición:", response.status, text);
+      }
+    } catch (error) {
+      console.error("Error al editar la tarea:", error);
+    }
+  };
+
+  // 5. Cancelar edición
+  const cancelarEdicion = () => {
+    setEditando(null);
+    setTareaEditada("");
+  };
+
+  // 6. Eliminar una tarea
   const eliminarTarea = async (id) => {
     try {
       await fetch(`${API_URL}/tareas/${id}`, { method: "DELETE" });
@@ -60,11 +107,13 @@ function App() {
     }
   };
 
-  // 4. Cambiar estado de una tarea (PATCH)
+  // 7. Cambiar estado de una tarea (PATCH)
   const alternarTarea = async (id, estadoActual) => {
     try {
-      await fetch(`${API_URL}/tareas/${id}?completada=${!estadoActual}`, {
-        method: "PATCH"
+      await fetch(`${API_URL}/tareas/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completada: !estadoActual })
       });
       cargarTareas(); // Refrescar la lista
     } catch (error) {
@@ -89,7 +138,7 @@ function App() {
         <button type="submit" style={{ padding: '10px 20px' }}>Agregar Tarea</button>
       </form>
 
-     <ul style={{ listStyleType: 'none', padding: 0 }}>
+      <ul style={{ listStyleType: 'none', padding: 0 }}>
         {tareas.map((tarea) => (
           <li key={tarea.id} style={{ 
             padding: '10px', 
@@ -98,28 +147,68 @@ function App() {
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
-            <span 
-              onClick={() => alternarTarea(tarea.id, tarea.completada)}
-              style={{ 
-                cursor: 'pointer', 
-                textDecoration: tarea.completada ? 'line-through' : 'none',
-                color: tarea.completada ? 'gray' : 'black'
-              }}
-            >
-              {tarea.completada ? '✅' : '🟩'} {tarea.titulo}
-            </span>
-            
-            <button 
-              onClick={() => eliminarTarea(tarea.id)}
-              style={{ backgroundColor: '#ff4444', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}
-            >
-              Eliminar
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+              <span 
+                onClick={() => alternarTarea(tarea.id, tarea.completada)}
+                style={{ 
+                  cursor: 'pointer', 
+                  textDecoration: tarea.completada ? 'line-through' : 'none',
+                  color: tarea.completada ? 'gray' : 'black'
+                }}
+              >
+                {tarea.completada ? '✅' : '🟩'}
+                
+              </span>
+
+              {editando === tarea.id ? (
+                <input
+                  value={tareaEditada}
+                  onChange={(e) => setTareaEditada(e.target.value)}
+                  style={{ padding: '8px', width: '300px', border: '1px solid #ccc', borderRadius: '6px' }}
+                />
+              ) : (
+                <span style={{ flex: 1, cursor: 'default' }}>{tarea.titulo}</span>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {editando === tarea.id ? (
+                <>
+                  <button
+                    onClick={() => guardarEdicion(tarea.id)}
+                    style={{ backgroundColor: '#11a28fb7', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    onClick={cancelarEdicion}
+                    style={{ backgroundColor: '#999', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                  >
+                    Cancelar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => iniciarEdicion(tarea)}
+                    style={{ backgroundColor: '#11a28fb7', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                  >
+                    Editar
+                  </button>
+                  <button 
+                    onClick={() => eliminarTarea(tarea.id)}
+                    style={{ backgroundColor: '#ff4444', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                  >
+                    Eliminar
+                  </button>
+                </>
+              )}
+            </div>
           </li>
         ))}
       </ul>
     </div>
-    )
+  )
 }
 
 export default App

@@ -1,42 +1,44 @@
-name: Deploy Backend to AWS App Runner
+name: Deploy Backend to AWS Elastic Beanstalk
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'backend/**' # Solo se activa si hay cambios dentro de la carpeta del backend
+    branches: [ "main" ]
 
 jobs:
   deploy:
-    name: Build and Push to AWS
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descargar el código del repositorio
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # 2. Autenticarse en AWS usando los secretos guardados
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+        aws-region: us-east-2 # 📍 Tu región actual de Ohio
 
-    # 3. Iniciar sesión en AWS ECR
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    # 4. Construir la imagen Docker, etiquetarla y subirla a ECR
     - name: Build, Tag, and Push Image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: backendfastapi # Debe ser igual al nombre que pusiste en AWS ECR
+        ECR_REPOSITORY: backendfastapi # 🏷️ Tu repositorio en minúsculas
         IMAGE_TAG: latest
       run: |
-        cd backend
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./backend
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Deploy to Elastic Beanstalk
+      uses: einaregilsson/beanstalk-deploy@v21
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: 'backend-fastapi-app' # 🏢 El nombre que le darás en AWS
+        environment_name: 'BackendFastapiApp-env' # 🌐 El entorno de AWS
+        version_label: ${{ github.sha }}
+        region: us-east-2
+        deployment_package: backend/Dockerrun.aws.json # 🗺️ Usamos el JSON como paquete

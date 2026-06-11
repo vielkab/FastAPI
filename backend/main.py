@@ -57,12 +57,20 @@ def actualizar_tarea(tarea_id: int, tarea_actualizada: Tarea):
             return tarea_actualizada
     return {"error": error}
 
+# Modelo para actualizaciones parciales (PATCH)
+class TareaUpdate(BaseModel):
+    titulo: str | None = None
+    completada: bool | None = None
+
 # Endpoint para actualizar parcialmente una tarea (PATCH)
-@app.patch("/tareas/{tarea_id}")
-def actualizar_estado_tarea(tarea_id: int, completada: bool):
+@app.patch("/tareas/{tarea_id}", response_model=Tarea)
+def actualizar_estado_tarea(tarea_id: int, tarea_actualizada: TareaUpdate):
     for tarea in base_de_datos_tareas:
         if tarea["id"] == tarea_id:
-            tarea["completada"] = completada
+            if tarea_actualizada.titulo is not None:
+                tarea["titulo"] = tarea_actualizada.titulo
+            if tarea_actualizada.completada is not None:
+                tarea["completada"] = tarea_actualizada.completada
             return tarea
     return {"error": error}
 

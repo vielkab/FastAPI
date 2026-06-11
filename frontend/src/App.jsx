@@ -50,6 +50,28 @@ function App() {
     }
   };
 
+  // 3. Eliminar una tarea
+  const eliminarTarea = async (id) => {
+    try {
+      await fetch(`${API_URL}/tareas/${id}`, { method: "DELETE" });
+      cargarTareas(); // Refrescar la lista
+    } catch (error) {
+      console.error("Error al eliminar la tarea:", error);
+    }
+  };
+
+  // 4. Cambiar estado de una tarea (PATCH)
+  const alternarTarea = async (id, estadoActual) => {
+    try {
+      await fetch(`${API_URL}/tareas/${id}?completada=${!estadoActual}`, {
+        method: "PATCH"
+      });
+      cargarTareas(); // Refrescar la lista
+    } catch (error) {
+      console.error("Error al actualizar la tarea:", error);
+    }
+  };
+  
   return (
     <div className="container">
       <h1>Lista de Tareas Multinube</h1>

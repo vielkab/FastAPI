@@ -5,7 +5,7 @@ from typing import List
 
 error = "Tarea no encontrada"
 origins = [
-    "https://fastapi-817979807762.us-south1.run.app/", # Tu url de Google Cloud
+    "https://fastapi-817979807762.us-south1.run.app", # Tu url de Google Cloud
     "http://localhost:5173",                          # Por si pruebas local
 ]
 

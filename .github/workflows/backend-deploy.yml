@@ -38,7 +38,7 @@ jobs:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: 'backend-fastapi-app' # 🏢 El nombre que le darás en AWS
-        environment_name: 'backend-fastapi-app-env' # 🌐 El entorno de AWS
+        environment_name: 'Backend-fastapi-app-env' # 🌐 El entorno de AWS
         version_label: ${{ github.sha }}
         region: us-east-2
         deployment_package: backend/Dockerrun.aws.json # 🗺️ Usamos el JSON como paquete

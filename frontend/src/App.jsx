@@ -89,15 +89,37 @@ function App() {
         <button type="submit" style={{ padding: '10px 20px' }}>Agregar Tarea</button>
       </form>
 
-      <ul style={{ listStyleType: 'none', padding: 0 }}>
+     <ul style={{ listStyleType: 'none', padding: 0 }}>
         {tareas.map((tarea) => (
-          <li key={tarea.id} style={{ padding: '8px', borderBottom: '1px solid #eee', fontSize: '18px' }}>
-            🟩 {tarea.titulo}
+          <li key={tarea.id} style={{ 
+            padding: '10px', 
+            borderBottom: '1px solid #eee', 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span 
+              onClick={() => alternarTarea(tarea.id, tarea.completada)}
+              style={{ 
+                cursor: 'pointer', 
+                textDecoration: tarea.completada ? 'line-through' : 'none',
+                color: tarea.completada ? 'gray' : 'black'
+              }}
+            >
+              {tarea.completada ? '✅' : '🟩'} {tarea.titulo}
+            </span>
+            
+            <button 
+              onClick={() => eliminarTarea(tarea.id)}
+              style={{ backgroundColor: '#ff4444', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}
+            >
+              Eliminar
+            </button>
           </li>
         ))}
       </ul>
     </div>
-  )
+    )
 }
 
 export default App

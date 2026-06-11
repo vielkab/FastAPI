@@ -47,3 +47,4 @@ jobs:
         version_label: ${{ github.sha }}
         region: us-east-2
         deployment_package: deploy.zip # 👈 Le pasamos todo el paquete comprimido con el Dockerfile real
+        use_existing_version_if_available: true
